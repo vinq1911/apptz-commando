@@ -1,27 +1,21 @@
 import React from 'react';
 import axios from 'axios';
-import UserCard from './UserCard';
+import ApptzConfig from '../Apptzconfig';
 
 class Api extends React.Component {
-  state = { users: [] };
-
-
-
-  componentDidMount() {
-    axios.get('https://api.apptz.app/2/listusers')
+  state = {
+    apptzConfig: {},
+    initialized: false,
+    privileged: false
+  };
+  constructor(props) {
+    super(props);
+    axios.get(`${ApptzConfig.endpoint}/${ApptzConfig.base}/apptzConfig`)
       .then(res => {
-        this.setState({ users: res.data });
+        console.log(res);
+        this.setState({ apptzConfig: res.data });
     });
   }
-
-  render() {
-      return this.state.users.map((usr) => {return (
-
-        <UserCard key={usr.cust_id} userData={usr} onModify={this.props.onModify} />
-
-    )});
-  }
-
 }
 
 export default Api;

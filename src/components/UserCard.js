@@ -1,29 +1,39 @@
 import React from 'react'
 import { Card, Icon, Image } from 'semantic-ui-react'
 
-class UserCard extends React.Component {
+function UserCard(props) {
 
-  userMod = () => {
-    this.props.onModify(this.props.userData.cust_id);
-  }
+  const profileData = props.profileData;
 
-  render() {
-    return (
-      <Card>
-        <Image src={`https://connect.apptz.app/assets/img/${this.props.userData.cust_picture}`} wrapped ui={false} />
-        <Card.Content>
-          <Card.Header>{this.props.userData.cust_name}</Card.Header>
-          <Card.Meta>
-            <span className='date'>Joined in 2015</span>
-          </Card.Meta>
-          <Card.Description>
-            <span onClick={this.userMod}>Click</span>
-          </Card.Description>
-        </Card.Content>
-
-      </Card>
-    );
-  }
+  return (
+    <div className="col s12 m6 l4">
+      <div id="profile-card" className="card">
+          <div className="card-image waves-effect waves-block waves-light">
+             <img className="activator" src={profileData.userBg} alt="user bg" />
+          </div>
+          <div className="card-content">
+             <img src={profileData.userImg} alt="" className="circle responsive-img activator card-profile-image cyan lighten-1 padding-2" />
+             <a className="btn-floating activator btn-move-up waves-effect waves-light red accent-2 z-depth-4 right">
+                <i className="material-icons">edit</i>
+             </a>
+             <h5 className="card-title activator grey-text text-darken-4">{profileData.userName}</h5>
+             <p><i className="material-icons profile-card-i">perm_identity</i> {profileData.userStatus}</p>
+             <p><i className="material-icons profile-card-i">perm_phone_msg</i> {profileData.userPhone}</p>
+             <p><i className="material-icons profile-card-i">email</i> {profileData.userEmail}</p>
+          </div>
+          <div className="card-reveal">
+             <span className="card-title grey-text text-darken-4">{profileData.userName} <i className="material-icons right">close</i>
+             </span>
+             <p>Edit your information here.</p>
+             <p  onClick={() => {console.log("boo"); props.dispatch({type: 'selectProfile', selectedProfile: profileData.userName})}} ><i className="material-icons">perm_identity</i> {profileData.userStatus}</p>
+             <p><i className="material-icons">perm_phone_msg</i> {profileData.userPhone}</p>
+             <p><i className="material-icons">email</i> {profileData.userEmail}</p>
+             <p><i className="material-icons">cake</i> {profileData.userBday}</p>
+             <p></p>
+          </div>
+       </div>
+     </div>
+  );
 }
 
 export default UserCard;
