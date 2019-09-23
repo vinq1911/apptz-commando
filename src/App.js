@@ -8,6 +8,7 @@ import GeneralCard from './components/GeneralCard';
 import ProfileCard from './components/ProfileCard';
 import StateContext from './StateMachine';
 import axios from 'axios';
+import M from 'materialize-css';
 
 import {
   BrowserRouter as Router,
@@ -138,6 +139,11 @@ class App extends React.Component {
   };
 
   initialState = {
+    adduserform: {useremail: '', userpassword: '', userphone: '', username: ''},
+    groupData: {},
+    itemData: {},
+    adminData: {},
+    addUserCard: false,
     userData: {},
     profileData: { userTest: 'brock' },
     apptzAxios: null,
@@ -154,10 +160,27 @@ class App extends React.Component {
     this.setState({...action});
   };
 
+  switchBool = (stateBool) => {
+    console.log("switching bool");
+    console.log(this.state[stateBool]+"->"+!this.state[stateBool]);
+    this.setState({[stateBool]: !this.state[stateBool]});
+  }
+
   rootCallback = (action) => {
-    console.log("root cb");
+    console.log("root cb"+action);
     var cb = () => { console.log("fail"); };
+    var addUserCard = this.state.addUserCard;
     switch (action) {
+      case 'addUser':
+        Axios.post('/createUser', {...this.state.adduserform}).then(res => {console.log(res) });
+        cb = () => { console.log("adfinhg user") };
+        break;
+      case 'refreshData':
+        cb = () => { Axios.get('/getData').then((res) => { this.setState({userData: res.data.userData, groupData: res.data.groupData, itemData: res.data.itemData, adminData: res.data.adminData}); console.log(res); console.log("updated data"); }); };
+        break;
+      case 'switchAddUser':
+        cb = () => this.switchBool('addUserCard');
+        break;
       case 'reloadUserData':
         cb = () => { console.log("reloading userdata now"); };
         break;
@@ -199,7 +222,6 @@ class App extends React.Component {
     console.log("main mpc fired");
     this.setState({menuParadigm: mi});
     console.log(mi);
-    console.log(this);
   }
 
 
@@ -211,6 +233,7 @@ class App extends React.Component {
     const state = this.state;
     const dispatch = this.dispatch;
     const rootCallback = this.rootCallback;
+
     return (
       <StateContext.Provider value={{state: state, dispatch: dispatch, rootcb: rootCallback}}>
         <Router>

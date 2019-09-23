@@ -1,16 +1,15 @@
-import React from 'react'
-import { Card, Icon, Image } from 'semantic-ui-react'
+import React from 'react';
+import M from 'materialize-css';
 
-function UserCard(props) {
+
+function GroupCard(props) {
 
   const profileData = props.profileData;
 
   return (
     <div className="col s12 m6 l4">
-      <div id="profile-card" className="card deep-purple lighten-5">
-          <div className="card-image waves-effect waves-block waves-light">
-             <img className="activator" src={profileData.userBg} alt="user bg" />
-          </div>
+      <div id="profile-card" className="card blue lighten-5">
+
           <div className="card-content">
              <img src={profileData.userImg} alt="" className="circle responsive-img activator card-profile-image cyan lighten-1 padding-2" />
              <a className="btn-floating activator btn-move-up waves-effect waves-light red accent-2 z-depth-4 right">
@@ -36,4 +35,4 @@ function UserCard(props) {
   );
 }
 
-export default UserCard;
+export default GroupCard;
