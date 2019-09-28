@@ -9,6 +9,10 @@ import ProfileCard from './components/ProfileCard';
 import StateContext from './StateMachine';
 import axios from 'axios';
 import M from 'materialize-css';
+import { Snackbar, IconButton } from '@material-ui/core';
+import CloseIcon from '@material-ui/icons/Close';
+import { makeStyles } from '@material-ui/core/styles';
+
 
 import {
   BrowserRouter as Router,
@@ -111,13 +115,7 @@ class App extends React.Component {
 
   profileRequest = () => {
     Axios.post('/profile', {posttest: 'testing'}).then((res) => { this.setState({...this.state, profileData: res.data}) });
-  }
-
-  mainMenu = () => {
-    return (
-      <ProfileCard />
-    );
-  }
+  };
 
   handleParadigm = () => {
     var Pcomponent = this.state.menuParadigm;
@@ -130,25 +128,42 @@ class App extends React.Component {
 
   Private = () => {
     return (
-      <DashBoard mpc={this.changeMenuParadigm} logoImg={this.state.logoImg} mainMenu={this.mainMenu}>
+      <DashBoard>
         <div className="row">
           {this.handleParadigm()}
         </div>
       </DashBoard>
     );
   };
+  UserSettings = () => {
+    return (
+      <div> UserSettings </div>
+    );
+  };
 
   initialState = {
+    menuParadigm: () => {
+      return (
+        <ProfileCard />
+      );
+    },
+    searchTerm: '',
+    selectedElements: [],
     adduserform: {useremail: '', userpassword: '', userphone: '', username: ''},
+    addgroupform: {groupemail: '', groupphone: '', groupname: ''},
     groupData: {},
     itemData: {},
     adminData: {},
     addUserCard: false,
     userData: {},
+    changeMenuParadigm: (mi) => {
+      console.log("main mpc fired");
+      this.setState({menuParadigm: mi});
+      console.log(mi);
+    },
     profileData: { userTest: 'brock' },
     apptzAxios: null,
     endPointRegistered: false,
-    menuParadigm: this.mainMenu,
     ...apptzState,
     ...ApptzConfig
   };
@@ -166,17 +181,62 @@ class App extends React.Component {
     this.setState({[stateBool]: !this.state[stateBool]});
   }
 
-  rootCallback = (action) => {
-    console.log("root cb"+action);
+  rootCallback = (action, params = false) => {
+    console.log("root cb "+action);
     var cb = () => { console.log("fail"); };
     var addUserCard = this.state.addUserCard;
     switch (action) {
+      case 'instantChange':
+        cb = (fieldData) => {
+          Axios.post('/changeData', { fieldData }).then(res => {
+            console.log(res);
+          });
+        };
+      break;
+      case 'addGroup':
+        cb = () => {
+          Axios.post('/createGroup', {...this.state.addgroupform}).then(res => {
+            if (res.data.status == 'success') {
+              this.setState({addgroupform: this.initialState.addgroupform, snackBarMessage: "Group created successfully."});
+            } else {
+              this.setState({ snackBarMessage: "Group creation failed." });
+            }
+            console.log(res);
+          });
+        };
+      break;
       case 'addUser':
-        Axios.post('/createUser', {...this.state.adduserform}).then(res => {console.log(res) });
-        cb = () => { console.log("adfinhg user") };
+        cb = () => {
+          Axios.post('/createUser', {...this.state.adduserform}).then(res => {
+            if (res.data.status == 'success') {
+              this.setState({adduserform: this.initialState.adduserform});
+              console.log("user added");
+              console.log(res);
+              this.setState({ snackBarMessage: "User added succesfully." });
+            } else {
+              console.log("user add failed");
+              console.log(res);
+              this.setState({ snackBarMessage: "User creation process failed." });
+            }
+            this.setState({ snackBarOpen: true });
+          });
+          console.log("adfinhg user") };
         break;
       case 'refreshData':
-        cb = () => { Axios.get('/getData').then((res) => { this.setState({userData: res.data.userData, groupData: res.data.groupData, itemData: res.data.itemData, adminData: res.data.adminData}); console.log(res); console.log("updated data"); }); };
+        cb = () => { Axios.get('/getData').then((res) => {
+          var tmpUd = [];
+          var tmpGd = [];
+          var tmpId = [];
+          res.data.userData.forEach((userd) => { tmpUd[userd['id']] = userd });
+          res.data.groupData.forEach((groupd) => { tmpGd[groupd['id']] = groupd });
+          res.data.itemData.forEach((itemd) => { tmpId[itemd['id']] = itemd });
+          this.setState({ userData: tmpUd, groupData: tmpGd, itemData: res.data.tmpId, adminData: res.data.adminData});
+          console.log(res);
+          console.log("updated data");
+        }); };
+        break;
+      case 'addCustomField':
+        cb = () => { Axios.post('/createField', params).then((res) => { this.setState(...res); })};
         break;
       case 'switchAddUser':
         cb = () => this.switchBool('addUserCard');
@@ -190,7 +250,7 @@ class App extends React.Component {
       default:
         cb = () => { console.log("no cb present"); };
     }
-    cb();
+    cb(params);
   }
 
   registerEndpoint = () => {
@@ -218,16 +278,29 @@ class App extends React.Component {
     this.registerEndpoint();
   }
 
-  changeMenuParadigm = (mi) => {
-    console.log("main mpc fired");
-    this.setState({menuParadigm: mi});
-    console.log(mi);
-  }
+  handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
 
+    this.setState({snackBarOpen: false});
+  };
+
+  useStyles = {};
 
   componentDidMount() {
     apptzState.registerLogin = this.registerLogin;
+    this.useStyles = makeStyles(theme => ({
+      close: {
+        padding: theme.spacing(0.5),
+      },
+    }));
   }
+
+  componentDidUpdate() {
+    M.updateTextFields();
+  }
+
 
   render() {
     const state = this.state;
@@ -240,8 +313,34 @@ class App extends React.Component {
           <div>
             <LoginRoute path="/login" component={Login} />
             <PrivateRoute exact path="/" component={this.Private} />
+            <PrivateRoute exact path="/settings/user" component={this.UserSettings} />
           </div>
         </Router>
+        <Snackbar
+        anchorOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
+        open={this.state.snackBarOpen}
+        autoHideDuration={6000}
+        onClose={this.state.snackBarClose}
+        ContentProps={{
+          'aria-describedby': 'message-id',
+        }}
+        message={<span id="message-id">{this.state.snackBarMessage}</span>}
+        action={[
+
+          <IconButton
+            key="close"
+            aria-label="close"
+            color="inherit"
+            className={this.useStyles.close}
+            onClick={this.handleClose}
+          >
+            <CloseIcon />
+          </IconButton>,
+        ]}
+      />
       </StateContext.Provider>
     );
   }

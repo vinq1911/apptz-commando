@@ -1,43 +1,64 @@
 import React, { useContext } from 'react';
+import { Redirect } from 'react-router-dom';
 import StateContext from '../StateMachine';
 import axios from 'axios';
-import UserCard from './UserCard';
+import GroupCard from './GroupCard';
 import ApptzConfig from '../Apptzconfig';
 import ButtonCard from './ButtonCard';
-import AddUserCard from './AddUserCard';
+import Maso from './Maso';
+
 
 function Groups(props) {
+
   const context = useContext(StateContext);
   let searchTerm = context.state.searchTerm;
   let groupData = context.state.groupData;
-
-  let retval, displayaddgroup;
+  let retval1, retval2;
+  let groupdataPresentMessage = "Group data not loaded.";
+  const searchMatch = (needle, haystack) => {
+    return Object.keys(haystack).some(function(key) {
+      if (typeof haystack[key] === 'object') {
+        return searchMatch(needle, haystack[key]);
+      } else {
+        return haystack[key].toString().toLowerCase().includes(needle.toLowerCase());
+      }
+    });
+  };
   console.log(groupData);
-  if (typeof userData !== 'undefined') {
-    if (userData.length > 0) {
-      retval = props.map((groupData) => {
-        return (
-          <GroupCard groupData={groupData} />
-        );
+  if (typeof groupData !== 'undefined') {
+    groupdataPresentMessage = "No user data. Add users, maybe?";
+    if (groupData.length > 0) {
+      groupdataPresentMessage = "Reload userdata";
+      retval1 = groupData.map((groupData) => {
+        if (context.state.searchTerm.length > 0 && searchMatch(context.state.searchTerm, groupData) || context.state.searchTerm.length == 0) {
+          return (
+            <GroupCard key={groupData.id} profileData={groupData} />
+          );
+        }
+        return;
       });
-    } else {
-      retval = (
-        <div>
-        <ButtonCard btnIcon="replay" btnCb={() => { context.rootcb('refreshData'); }}>No group data present.<br />Press reload to check in groupdata.</ButtonCard>
-        <ButtonCard btnIcon="person_add" btnCb={() => { context.rootcb('switchAddGroup'); }}>Add new group<br />Toggle group creator on / off </ButtonCard>
-        </div>
-      );
     }
   }
+  retval2 = (
+    <div>
 
-  if (context.state.addUserCard) {
-    displayadduser = <AddUserCard />;
-  }
+      <ButtonCard btnClass="indigo lighten-5" btnIcon="replay" btnCb={() => { context.rootcb('refreshData'); }}>{groupdataPresentMessage}<br />Press reload to check in group data.</ButtonCard>
+    </div>
+  );
+
+
+
+
 
   return (
     <div>
-      {displayadduser}
-      {retval}
+
+      <Maso>
+        {retval1}
+      </Maso>
+
+
+      {retval2}
     </div>
   );
 
