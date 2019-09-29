@@ -7,7 +7,6 @@ const ProfileCard = () => {
 
     const context = useContext(StateContext);
     const profileData = context.state.profileData;
-    console.log(context.state);
     return (
       <UserCard profileData={profileData} dispatch={context.dispatch} />
     );

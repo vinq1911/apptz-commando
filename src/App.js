@@ -144,7 +144,7 @@ class App extends React.Component {
   initialState = {
     menuParadigm: () => {
       return (
-        <ProfileCard />
+        <div>&nbsp;</div>
       );
     },
     searchTerm: '',
@@ -202,10 +202,11 @@ class App extends React.Component {
           Axios.post('/createGroup', {...this.state.addgroupform}).then(res => {
             if (res.data.status == 'success') {
               this.setState({addgroupform: this.initialState.addgroupform, snackBarMessage: "Group created successfully."});
+              this.rootCallback('refreshData');
             } else {
               this.setState({ snackBarMessage: "Group creation failed." });
             }
-            // console.log(res);
+            console.log(res);
           });
         };
       break;
@@ -245,7 +246,7 @@ class App extends React.Component {
           res.data.userData.forEach((userd) => { tmpUd[userd['id']] = userd });
           res.data.groupData.forEach((groupd) => { tmpGd[groupd['id']] = groupd });
           res.data.itemData.forEach((itemd) => { tmpId[itemd['id']] = itemd });
-          this.setState({ userData: tmpUd, groupData: tmpGd, itemData: res.data.tmpId, adminData: res.data.adminData});
+          this.setState({ userData: tmpUd, groupData: tmpGd, itemData: res.data.tmpId, adminData: res.data.adminData });
           // console.log(res);
           // console.log("updated data");
         }); };

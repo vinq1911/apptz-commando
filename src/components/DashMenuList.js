@@ -42,7 +42,7 @@ function GroupSettings() {
 }
 
 function Mainmenu() {
-  return (<ProfileCard />);
+  return (<div>Main menu</div>);
 }
 
 const DashMenuList = (props) => {
@@ -65,7 +65,7 @@ const DashMenuList = (props) => {
           </a>
           </li>
           <li>
-            <a className="dropdown-menu" href="#" onClick={(e) => { context.rootcb('refreshData');  }}>
+            <a className="dropdown-menu" href="#" onClick={(e) => { context.dispatch({selectedElements: {}}); context.rootcb('refreshData');  }}>
               <i className="material-icons">replay</i>
               <span>Reload</span>
             </a>
@@ -94,7 +94,7 @@ const DashMenuList = (props) => {
             </a>
           </li>
           <li>
-            <a className="dropdown-menu" href="#" onClick={(e) => { context.rootcb('refreshData');  }}>
+            <a className="dropdown-menu" href="#" onClick={(e) => { context.dispatch({selectedElements: {}}); context.rootcb('refreshData');  }}>
               <i className="material-icons">replay</i>
               <span>Reload</span>
             </a>
@@ -123,7 +123,7 @@ const DashMenuList = (props) => {
             </a>
           </li>
           <li>
-            <a className="dropdown-menu" href="#" onClick={(e) => { context.rootcb('refreshBillingData');  }}>
+            <a className="dropdown-menu" href="#" onClick={(e) => { context.dispatch({selectedElements: {}}); context.rootcb('refreshBillingData');  }}>
               <i className="material-icons">replay</i>
               <span>Reload</span>
             </a>
@@ -152,7 +152,7 @@ const DashMenuList = (props) => {
           </a>
           </li>
           <li>
-            <a className="dropdown-menu" href="#" onClick={(e) => { context.rootcb('refreshData');  }}>
+            <a className="dropdown-menu" href="#" onClick={(e) => { context.dispatch({selectedElements: {}}); context.rootcb('refreshData');  }}>
               <i className="material-icons">replay</i>
               <span>Reload</span>
             </a>
