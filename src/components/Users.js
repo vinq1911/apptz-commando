@@ -25,7 +25,6 @@ function Users(props) {
       }
     });
   };
-  console.log(userData);
   if (typeof userData !== 'undefined') {
     userdataPresentMessage = "No user data. Add users, maybe?";
     if (userData.length > 0) {

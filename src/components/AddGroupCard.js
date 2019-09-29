@@ -13,7 +13,6 @@ const AddGroupCard = () => {
     context.rootcb('addGroup');
   }
   const onFieldChange = (e, fname) => {
-    console.log(e.target.value);
     context.dispatch({addgroupform: {...context.state.addgroupform, [fname]: e.target.value}});
   }
   const enterednumber = (context.state.addgroupform.groupphone.length > 0 && context.state.addgroupform.groupphone.substring(0,1) != "+") ? "+"+context.state.addgroupform.groupphone : context.state.addgroupform.groupphone;

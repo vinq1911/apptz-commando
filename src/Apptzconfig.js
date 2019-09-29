@@ -6,10 +6,11 @@ const ApptzConfig = {
     userName: true,
     userEmail: true,
     userPhone: true,
+    password: true,
   },
   customUserFields: [
     {fieldName: 'Birthday', fieldId: 'userBday', fieldType: 'string', fieldIcon: 'cake'},
-    {fieldName: 'Note', fieldId: 'userNote', fieldType: 'string', fieldIcon: 'notes'}
+    {fieldName: 'Note', fieldId: 'userNote', fieldType: 'string', fieldIcon: 'notes'},
   ],
 }
 

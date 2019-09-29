@@ -58,7 +58,7 @@ export function DashBoard(props) {
 
   const clickAction = (e, act) => {
     e.preventDefault();
-    console.log(act);
+    // // console.log(act);
     context.state.changeMenuParadigm(act);
   };
 

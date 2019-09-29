@@ -4,25 +4,29 @@ import M from 'materialize-css';
 
 const InstantChangeInput = (props) => {
   const context = useContext(StateContext);
-  console.log(props);
 
   const onThisChange = (val, params) => {
     var oldState = context.state;
     oldState[props.elemType][params.fieldId][params.fieldKey] = val;
-    console.log(oldState);
     context.dispatch({ ...oldState });
   };
 
-  console.log(props.elemData);
   const fields = props.elemData;
   let f2 = [];
   Object.keys(fields).forEach((udKey) => {;
-    console.log(udKey);
-    console.log(fields[udKey]);
     if (context.state.allowUserEditFields[udKey]) {
+      var inputtype = (udkey) => {
+        if (udkey == "id") {
+          return 'hidden';
+        }
+        if (udkey == "password") {
+          return "password";
+        }
+        return "text";
+      }
       f2.push(
         <div className="input-field col s12">
-          <input onChange={(e) => { onThisChange(e.target.value, {fieldId: fields.id, fieldKey: udKey}) }} id={udKey+"-"+fields.id} type="text" value={fields[udKey]} className="validate" />
+          <input onChange={(e) => { onThisChange(e.target.value, {fieldId: fields.id, fieldKey: udKey}) }} id={udKey+"-"+fields.id} type={inputtype(udKey)} value={fields[udKey]} className="validate" />
           <label htmlFor={udKey+"-"+fields.id}>{udKey}</label>
         </div>
       );

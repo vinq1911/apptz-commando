@@ -13,7 +13,6 @@ const AddUserCard = () => {
     context.rootcb('addUser');
   }
   const onFieldChange = (e, fname) => {
-    console.log(e.target.value);
     context.dispatch({adduserform: {...context.state.adduserform, [fname]: e.target.value}});
   }
   const enterednumber = (context.state.adduserform.userphone.length > 0 && context.state.adduserform.userphone.substring(0,1) != "+") ? "+"+context.state.adduserform.userphone : context.state.adduserform.userphone;

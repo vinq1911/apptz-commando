@@ -48,13 +48,13 @@ const apptzState = {
 };
 
 const getToken = (username, password, cb) => {
-  console.log(apptzState);
+  // console.log(apptzState);
   axios.get(`${ApptzConfig.endpoint}/${ApptzConfig.base}/passwordAuth/${password}/${username}`)
     .then(res => {cb(res);});
 };
 
 const setToken = (res) => {
-  console.log(res);
+  // console.log(res);
   if (res.data.puid >= apptzState.apiUid) {
     apptzState.bearerToken = res.data.secret;
     apptzState.authUid = res.data.uid;
@@ -64,7 +64,7 @@ const setToken = (res) => {
     apptzState.isLoggedIn = false;
   }
   apptzState.registerLogin(apptzState);
-  console.log(apptzState);
+  // console.log(apptzState);
 };
 
 function LoginRoute({ component: Component, ...rest }) {
@@ -148,18 +148,21 @@ class App extends React.Component {
       );
     },
     searchTerm: '',
-    selectedElements: [],
+    selectedElements: {},
     adduserform: {useremail: '', userpassword: '', userphone: '', username: ''},
     addgroupform: {groupemail: '', groupphone: '', groupname: ''},
+    addbillform: {billidentifier: ''},
     groupData: {},
     itemData: {},
     adminData: {},
+    fileList: [],
     addUserCard: false,
     userData: {},
+    dragDropTargets: [],
     changeMenuParadigm: (mi) => {
-      console.log("main mpc fired");
+      // console.log("main mpc fired");
       this.setState({menuParadigm: mi});
-      console.log(mi);
+      // console.log(mi);
     },
     profileData: { userTest: 'brock' },
     apptzAxios: null,
@@ -171,25 +174,26 @@ class App extends React.Component {
   state = this.initialState;
 
   dispatch = (action) => {
-    console.log("action!");
+    // console.log("action!");
     this.setState({...action});
   };
 
   switchBool = (stateBool) => {
-    console.log("switching bool");
-    console.log(this.state[stateBool]+"->"+!this.state[stateBool]);
+    // console.log("switching bool");
+    // console.log(this.state[stateBool]+"->"+!this.state[stateBool]);
     this.setState({[stateBool]: !this.state[stateBool]});
   }
 
   rootCallback = (action, params = false) => {
-    console.log("root cb "+action);
-    var cb = () => { console.log("fail"); };
+    // console.log("root cb "+action);
+    var cb = () => { // console.log("fail");
+    };
     var addUserCard = this.state.addUserCard;
     switch (action) {
       case 'instantChange':
         cb = (fieldData) => {
           Axios.post('/changeData', { fieldData }).then(res => {
-            console.log(res);
+            // console.log(res);
           });
         };
       break;
@@ -201,7 +205,16 @@ class App extends React.Component {
             } else {
               this.setState({ snackBarMessage: "Group creation failed." });
             }
-            console.log(res);
+            // console.log(res);
+          });
+        };
+      break;
+      case 'sendFile':
+        cb = (params) => {
+          Axios.post('/sendFile', params,{ headers: {
+      'Content-Type': 'multipart/form-data'
+    }}).then(res => {
+            // console.log(res);
           });
         };
       break;
@@ -210,17 +223,19 @@ class App extends React.Component {
           Axios.post('/createUser', {...this.state.adduserform}).then(res => {
             if (res.data.status == 'success') {
               this.setState({adduserform: this.initialState.adduserform});
-              console.log("user added");
-              console.log(res);
+              // console.log("user added");
+              // console.log(res);
               this.setState({ snackBarMessage: "User added succesfully." });
             } else {
-              console.log("user add failed");
-              console.log(res);
+              // console.log("user add failed");
+              // console.log(res);
               this.setState({ snackBarMessage: "User creation process failed." });
             }
+            this.rootCallback('refreshData');
             this.setState({ snackBarOpen: true });
           });
-          console.log("adfinhg user") };
+          // console.log("adfinhg user")
+        };
         break;
       case 'refreshData':
         cb = () => { Axios.get('/getData').then((res) => {
@@ -231,8 +246,8 @@ class App extends React.Component {
           res.data.groupData.forEach((groupd) => { tmpGd[groupd['id']] = groupd });
           res.data.itemData.forEach((itemd) => { tmpId[itemd['id']] = itemd });
           this.setState({ userData: tmpUd, groupData: tmpGd, itemData: res.data.tmpId, adminData: res.data.adminData});
-          console.log(res);
-          console.log("updated data");
+          // console.log(res);
+          // console.log("updated data");
         }); };
         break;
       case 'addCustomField':
@@ -241,14 +256,99 @@ class App extends React.Component {
       case 'switchAddUser':
         cb = () => this.switchBool('addUserCard');
         break;
-      case 'reloadUserData':
-        cb = () => { console.log("reloading userdata now"); };
+      case 'refreshBillingData':
+        this.setState({ snackBarMessage: "Loading current billing data..." });
+        cb = () => {
+          Axios.get('/getBillingData').then((res) => {
+            console.log(res);
+            this.setState({ snackBarMessage: "Billing data loading complete." });
+            this.setState({billingData: res.data.billingData});
+          });
+        };
+        this.setState({ snackBarOpen: true });
         break;
-      case 'addUser':
-        cb = () => { console.log("adding new user now"); };
+      case 'reloadUserData':
+        cb = () => { // console.log("reloading userdata now");
+        };
+        break;
+      case 'addBillTemplate':
+        cb = () => {
+          Axios.post('/addBillIdentifier', this.state.addbillform).then((res) => {
+            console.log(res);
+            this.setState({ snackBarMessage: "Bill template created." });
+          });
+        }
+
+      break;
+      case 'removeFromGroup':
+      // console.log(params);
+        cb = (params) => {
+          this.setState({ snackBarMessage: "Removing from group..." });
+          Axios.post('/removeFromGroup', {...params}).then(res => {
+            // console.log(res);
+            this.setState({ snackBarMessage: "Removal process failed." });
+            if (res.data.status == "success") {
+              this.setState({ snackBarMessage: "Removed successfully." });
+            }
+            this.rootCallback('refreshData');
+          });
+          this.setState({ snackBarOpen: true });
+        }
+        break;
+      case 'removeGroup':
+        cb = (params) => {
+          this.setState({ snackBarMessage: "Group detach processing..." });
+          Axios.post('/removeGroup', {groupId: params}).then(res => {
+            // console.log(res);
+            this.setState({ snackBarMessage: "Group detach process failed." });
+            if (res.data.status == "success") {
+              this.setState({ snackBarMessage: "Group detached successfully." });
+            }
+            this.rootCallback('refreshData');
+          });
+          this.setState({ snackBarOpen: true });
+        }
+        break;
+      case 'saveUser':
+        cb = (params) => {
+          this.setState({ snackBarMessage: "User modification started." });
+          Axios.post('/saveUser', {...params}).then(res => {
+            console.log(res);
+            if (res.data.status == "success") {
+              this.setState({ snackBarMessage: "User information modified." });
+            } else {
+              this.setState({ snackBarMessage: "User information modification failed."});
+            }
+          });
+          this.setState({ snackBarOpen: true });
+        };
+        break;
+      case 'removeUser':
+        cb = (params) => {
+          this.setState({ snackBarMessage: "User detach processing...." });
+          Axios.post('/removeUser', {userId: params}).then(res => {
+            console.log(res);
+            this.setState({ snackBarMessage: "User detach process failed." });
+            if (res.data.status == "success") {
+              this.setState({ snackBarMessage: "User detached successfully." });
+            }
+            this.rootCallback('refreshData');
+          });
+          this.setState({ snackBarOpen: true });
+        }
+        break;
+      case 'addToGroup':
+        cb = (params) => {
+          // console.log("adding to group "+params+" now"); // console.log(this.state.selectedElements);
+          Axios.post('/addToGroup', { toGroup: params, addUsers: this.state.selectedElements }).then(res => {
+            // console.log(res);
+            this.rootCallback('refreshData');
+          });
+        };
         break;
       default:
-        cb = () => { console.log("no cb present"); };
+        cb = () => { // console.log("no cb present");
+        };
     }
     cb(params);
   }
@@ -256,7 +356,7 @@ class App extends React.Component {
   registerEndpoint = () => {
     if (!this.state.endPointRegistered && this.state.isLoggedIn) {
       axios.get(`${ApptzConfig.endpoint}/${ApptzConfig.base}/apptzEndpoints`).then(res => {
-        console.log(res);
+        // console.log(res);
         this.setState({ apptzEndpoints: res.data, endPointRegistered: true });
         axios.defaults.baseURL = res.data.api;
         axios.defaults.headers.common['X-Apptz-Apiuid'] = this.state.apiUid;
@@ -267,13 +367,13 @@ class App extends React.Component {
         this.profileRequest();
       });
     }
-    console.log(this.state);
+    // console.log(this.state);
   }
 
 
 
   registerLogin = (st) => {
-    console.log(st);
+    // console.log(st);
     this.setState({...st});
     this.registerEndpoint();
   }
@@ -295,7 +395,12 @@ class App extends React.Component {
         padding: theme.spacing(0.5),
       },
     }));
-  }
+
+  };
+
+  componentWillUnmount() {
+
+  };
 
   componentDidUpdate() {
     M.updateTextFields();
@@ -341,6 +446,7 @@ class App extends React.Component {
           </IconButton>,
         ]}
       />
+
       </StateContext.Provider>
     );
   }

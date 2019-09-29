@@ -13,9 +13,7 @@ const GroupCard = (props) => {
 
 
   const profileData = props.profileData || {};
-  console.log(props);
   const extraFieldMap = function(extraField) {
-    console.log(extraField);
     if (profileData.notes) {
       return (
         <p><i className="material-icons profile-card-i">{extraField.fieldIcon}</i>{profileData['notes'][extraField.fieldId]}</p>
@@ -33,25 +31,27 @@ const GroupCard = (props) => {
       margin: theme.spacing(1),
     },
   })))();
-  const handleDelete = () => {};
+
 
 
 
 
   const context = useContext(StateContext);
+  const handleDelete = function(e) {
+    context.rootcb('removeFromGroup', { groupId: profileData.id, userId: e });
+  };
   const groupUsers = Object.keys(profileData.groupUsers).map((ukey) => {
-    console.log(context.state.userData[ukey]);
-    console.log(ukey);
-    return (<Chip
-          avatar={<Avatar alt={context.state.userData[ukey].userName} src={context.state.userData[ukey].userImg} />}
-          label={context.state.userData[ukey].userName}
-          onDelete={handleDelete}
-          className={classes.chip}
-      />);
+    if (typeof context.state.userData[ukey] !==  'undefined') {
+      return (<Chip
+            avatar={<Avatar alt={context.state.userData[ukey].userName} src={context.state.userData[ukey].userImg} />}
+            label={context.state.userData[ukey].userName}
+            onDelete={function() { handleDelete(ukey); }}
+            className={classes.chip}
+        />);
+    }
   });
   const groupGroups = Object.keys(profileData.groupGroups).map((ukey) => {
-    console.log(context.state.groupData[ukey]);
-    console.log(ukey);
+
     return (<Chip
           avatar={<Avatar alt={context.state.groupData[ukey].name} src={context.state.groupData[ukey].image} />}
           label={context.state.groupData[ukey].name}
@@ -59,6 +59,8 @@ const GroupCard = (props) => {
           className={classes.chip}
       />);
   });
+
+  const selectionsHasBeenMade = Object.keys(context.state.selectedElements).some((elem) => { return !!context.state.selectedElements[elem] });
 
   return (
     <div className="col s12 m6 l4 basicCard">
@@ -72,13 +74,17 @@ const GroupCard = (props) => {
              <a className="btn-floating activator btn-move-up waves-effect waves-light blue accent-2 z-depth-4 right">
                 <i className="material-icons">edit</i>
              </a>
+
              <a onClick={ () => {
-               var selelem = context.state.selectedElements;
-               selelem[profileData.id] ^= true;
-               context.dispatch({selectedElements: selelem});
-               console.log(context.state.selectedElements);
-             }} className="btn-floating btn-move-up waves-effect waves-light blue accent-2 z-depth-4 right">
-                <i className="material-icons">shopping_basket</i>
+               if (selectionsHasBeenMade) {
+                 var selelem = context.state.selectedElements;
+
+                 context.rootcb('addToGroup', profileData.id);
+               } else {
+
+               }
+             }} className={`btn-floating btn-move-up waves-effect waves-light accent-2 z-depth-4 right ${(selectionsHasBeenMade) ? 'blue accent-2' : 'disabled'}`}>
+                <i className="material-icons">playlist_add</i>
              </a>
              <h5 className="card-title activator grey-text text-darken-4">{profileData.name}</h5>
              <p>{groupUsers}</p>
@@ -87,8 +93,9 @@ const GroupCard = (props) => {
              <span className="card-title grey-text text-darken-4">{profileData.name} <i className="material-icons right">close</i>
              </span>
              <p>Edit your information here.</p>
-
-
+             <a className="btn red accent-2 z-depth-2 btn-move-down waves-effect waves-light" onClick={ () => { context.rootcb('removeGroup', profileData.id) }}>
+              Remove group
+             </a>
              <p></p>
           </div>
        </div>

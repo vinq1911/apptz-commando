@@ -16,15 +16,16 @@ function Groups(props) {
   let retval1, retval2;
   let groupdataPresentMessage = "Group data not loaded.";
   const searchMatch = (needle, haystack) => {
+    
     return Object.keys(haystack).some(function(key) {
-      if (typeof haystack[key] === 'object') {
+      if (typeof haystack[key] === 'object' || typeof haystack[key] === 'array') {
         return searchMatch(needle, haystack[key]);
       } else {
         return haystack[key].toString().toLowerCase().includes(needle.toLowerCase());
       }
     });
   };
-  console.log(groupData);
+  // console.log(groupData);
   if (typeof groupData !== 'undefined') {
     groupdataPresentMessage = "No user data. Add users, maybe?";
     if (groupData.length > 0) {
