@@ -150,11 +150,14 @@ class App extends React.Component {
     searchTerm: '',
     selectedElements: {},
     adduserform: {useremail: '', userpassword: '', userphone: '', username: ''},
+    addBillingData: {},
     addgroupform: {groupemail: '', groupphone: '', groupname: ''},
     addbillform: {billidentifier: ''},
     groupData: {},
     itemData: {},
     adminData: {},
+    billTemplateData: {},
+    billData: {},
     fileList: [],
     addUserCard: false,
     userData: {},
@@ -246,7 +249,9 @@ class App extends React.Component {
           res.data.userData.forEach((userd) => { tmpUd[userd['id']] = userd });
           res.data.groupData.forEach((groupd) => { tmpGd[groupd['id']] = groupd });
           res.data.itemData.forEach((itemd) => { tmpId[itemd['id']] = itemd });
-          this.setState({ userData: tmpUd, groupData: tmpGd, itemData: res.data.tmpId, adminData: res.data.adminData });
+          res.data.billData.forEach((billd) => { tmpId[billd['id']] = billd });
+          res.data.billTemplateData.forEach((billtempd) => { tmpId[billtempd['id']] = billtempd });
+          this.setState({ userData: tmpUd, groupData: tmpGd, itemData: res.data.tmpId, adminData: res.data.adminData, billData: res.data.billData, billTemplateData: res.data.billTemplateData });
           // console.log(res);
           // console.log("updated data");
         }); };
@@ -263,10 +268,26 @@ class App extends React.Component {
           Axios.get('/getBillingData').then((res) => {
             console.log(res);
             this.setState({ snackBarMessage: "Billing data loading complete." });
-            this.setState({billingData: res.data.billingData});
+            var _billingdata = {};
+            var _billtemplates = {};
+            Object.keys(res.data.billtemplates).map(key => { _billingdata[res.data.billtemplates[key].lb_id] = {}; _billtemplates[res.data.billtemplates[key].lb_id] = res.data.billtemplates[key]});
+            Object.keys(res.data.billingdata).map(key => { _billingdata[res.data.billingdata[key].lbl_lb_id][res.data.billingdata[key].lbl_id] = res.data.billingdata[key]});
+
+            this.setState({billingData: _billingdata});
+            this.setState({billTemplateData: _billtemplates});
+            console.log(this.state.billingData);
+            console.log(this.state.billTemplateData);
           });
         };
         this.setState({ snackBarOpen: true });
+        break;
+      case 'removeBillTemplate':
+        cb = (props) => {
+          Axios.post('/removeBillIdentifier', {billidentifier: props}).then(res => {
+            console.log(res);
+            this.rootCallback('refreshBillingData');
+          });
+        };
         break;
       case 'reloadUserData':
         cb = () => { // console.log("reloading userdata now");
@@ -277,11 +298,30 @@ class App extends React.Component {
           Axios.post('/addBillIdentifier', this.state.addbillform).then((res) => {
             console.log(res);
             this.setState({ snackBarMessage: "Bill template created." });
+            this.rootCallback('refreshBillingData');
           });
         }
 
       break;
+      case 'addBillRow':
+        cb = (props) => {
+          Axios.post('/addBillRow', {id: props, data: this.state.addBillingData[props]}).then(res => {
+            if (res.data.status == "success") {
+              this.rootCallback('refreshBillingData');
+            }
+            console.log(res);
+          });
+        };
+      break;
+      case 'changeTempBillingInfo':
+        cb = (props) => {
+          var abd = this.state.addBillingData;
+          abd[props.id] = props.data;
+          this.setState({ addBillingData: abd });
+        };
+      break;
       case 'removeFromGroup':
+
       // console.log(params);
         cb = (params) => {
           this.setState({ snackBarMessage: "Removing from group..." });

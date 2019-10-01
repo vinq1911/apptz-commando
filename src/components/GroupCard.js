@@ -42,7 +42,7 @@ const GroupCard = (props) => {
   };
   const groupUsers = Object.keys(profileData.groupUsers).map((ukey) => {
     if (typeof context.state.userData[ukey] !==  'undefined') {
-      return (<Chip
+      return (<Chip key={ukey}
             avatar={<Avatar alt={context.state.userData[ukey].userName} src={context.state.userData[ukey].userImg} />}
             label={context.state.userData[ukey].userName}
             onDelete={function() { handleDelete(ukey); }}
@@ -87,7 +87,7 @@ const GroupCard = (props) => {
                 <i className="material-icons">playlist_add</i>
              </a>
              <h5 className="card-title activator grey-text text-darken-4">{profileData.name}</h5>
-             <p>{groupUsers}</p>
+             <div>{groupUsers}</div>
           </div>
           <div className="card-reveal">
              <span className="card-title grey-text text-darken-4">{profileData.name} <i className="material-icons right">close</i>
