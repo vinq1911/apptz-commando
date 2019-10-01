@@ -27,7 +27,7 @@ const BillingTools = () => {
       <BillTemplateList />
       <AddBillTemplate />
       <CardPanel>
-        <DayPicker onDayClick={(e) => { var ab = context.state.addBillingData; ab.dueDateRow = e; context.dispatch({addBillingData: ab}); }} />
+        <DayPicker onDayClick={(e) => { var ab = context.state.addBillingData; ab.dueDateRow = e.toLocaleDateString(); context.dispatch({addBillingData: ab}); }} />
       </CardPanel>
     </Maso>
   );

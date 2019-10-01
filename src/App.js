@@ -249,8 +249,7 @@ class App extends React.Component {
           res.data.userData.forEach((userd) => { tmpUd[userd['id']] = userd });
           res.data.groupData.forEach((groupd) => { tmpGd[groupd['id']] = groupd });
           res.data.itemData.forEach((itemd) => { tmpId[itemd['id']] = itemd });
-          res.data.billData.forEach((billd) => { tmpId[billd['id']] = billd });
-          res.data.billTemplateData.forEach((billtempd) => { tmpId[billtempd['id']] = billtempd });
+        
           this.setState({ userData: tmpUd, groupData: tmpGd, itemData: res.data.tmpId, adminData: res.data.adminData, billData: res.data.billData, billTemplateData: res.data.billTemplateData });
           // console.log(res);
           // console.log("updated data");
