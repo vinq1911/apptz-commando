@@ -43,7 +43,7 @@ const GroupCard = (props) => {
   const groupUsers = Object.keys(profileData.groupUsers).map((ukey) => {
     if (typeof context.state.userData[ukey] !==  'undefined') {
       return (<Chip key={ukey}
-            avatar={<Avatar alt={context.state.userData[ukey].userName} src={context.state.userData[ukey].userImg} />}
+            avatar={<Avatar alt={context.state.userData[ukey].userName} src={`https://api.apptz.app/assets/img/${context.state.userData[ukey].userImg}`} />}
             label={context.state.userData[ukey].userName}
             onDelete={function() { handleDelete(ukey); }}
             className={classes.chip}

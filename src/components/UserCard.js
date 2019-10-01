@@ -29,11 +29,11 @@ const UserCard = (props) => {
     <div className="col s12 m6 l4 basicCard">
         <div id="profile-card" className={(context.state.selectedElements[profileData.id]) ? "card teal lighten-4" : "card deep-purple lighten-5"}>
             <div ref={userImg} className="card-image waves-effect waves-block waves-light">
-               <img src={profileData.userBg} alt="user bg" />
+               <img src={`https://api.apptz.app/assets/img/${profileData.userBg}`} alt="user bg" />
             </div>
             <div className="card-content">
 
-                 <img src={profileData.userImg} alt="" className="circle responsive-img card-profile-image cyan lighten-1 padding-2" />
+                 <img src={`https://api.apptz.app/assets/img/${profileData.userImg}`} alt="" className="circle responsive-img card-profile-image cyan lighten-1 padding-2" />
 
                <a className="btn-floating activator btn-move-up waves-effect waves-light blue accent-2 z-depth-4 right">
                   <i className="material-icons">edit</i>
@@ -47,10 +47,9 @@ const UserCard = (props) => {
                   <i className="material-icons">shopping_basket</i>
                </a>
                <h5 className="card-title activator grey-text text-darken-4">{profileData.userName}</h5>
-               <p><i className="material-icons profile-card-i">perm_identity</i> {profileData.userStatus}</p>
+               <p><i className="material-icons profile-card-i">perm_identity</i> {profileData.useridnumber}</p>
                <p><i className="material-icons profile-card-i">perm_phone_msg</i> {profileData.userPhone}</p>
                <p><i className="material-icons profile-card-i">email</i> {profileData.userEmail}</p>
-               {context.state.customUserFields.map(extraFieldMap)}
             </div>
             <div className="card-reveal">
                <span className="card-title grey-text text-darken-4">{profileData.userName} <i className="material-icons right">close</i>
@@ -61,7 +60,7 @@ const UserCard = (props) => {
                </ImageFileInput>
 
                <InstantChangeInput elemData={profileData} elemType="userData" />
-               
+
                <p></p>
                <p><a className="btn red accent-2 z-depth-2 btn-move-down waves-effect waves-light" onClick={ () => { context.rootcb('saveUser', profileData) }}>
                 Save changes

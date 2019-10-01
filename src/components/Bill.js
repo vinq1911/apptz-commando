@@ -3,6 +3,7 @@ import StateContext from '../StateMachine';
 import ButtonCard from './ButtonCard';
 import Grid from '@material-ui/core/Grid';
 import DayPicker from 'react-day-picker';
+import CloseBtn from './CloseBtn';
 import 'react-day-picker/lib/style.css';
 
 
@@ -10,12 +11,19 @@ const formatNum = (num) => {
   var _num = parseFloat(num);
   return _num.toFixed(2);
 }
+
+const BillAssignBtn = (props) => {
+
+  const context = useContext(StateContext);
+    console.log(Object.keys(context.state.selectedElements).length);
+  const cssClasses = (Object.keys(context.state.selectedElements).length > 0) ? 'waves-effect waves-light blue white-text' : 'disabled';
+  return (<a onClick={() => { context.rootcb('addBillRow', props.billId); }} className={`ml-1 btn ${cssClasses} right`}><i className="material-icons">add</i></a>);
+}
+
 const BillInputRow = (props) => {
   const context = useContext(StateContext);
   const billData = context.state.billingData[props.billId];
-  const addBillData = context.state.addBillingData[props.billId] || {productRow: '', priceRow: '', taxRow: context.state.defaultTax, dueDateRow: (new Date())};
-
-
+  const addBillData = context.state.addBillingData[props.billId] || {productRow: '', priceRow: '', taxRow: context.state.defaultTax, dueDateRow: (new Date('today'))};
 
   return (
     <div className="row">
@@ -31,13 +39,14 @@ const BillInputRow = (props) => {
         <input onChange={(e) => { context.rootcb('changeTempBillingInfo', {id: props.billId, data: {...addBillData, taxRow: e.target.value }}) }} type="number" step="0.01" value={addBillData.taxRow} className="validate" />
         <label>Add tax %</label>
       </div>
+      <div className="col s12 pb-2 pt-2 pl-2">
+        <BillAssignBtn />
+        <a onClick={() => { context.rootcb('addBillRow', props.billId); }} className="ml-1 btn blue white-text waves-effect waves-light right"><i className="material-icons">add</i></a>
+      </div>
       <div className="input-field col s12">
         <input onChange={(e) => { context.rootcb('changeTempBillingInfo', {id: props.billId, data: {...addBillData, dueDateRow: e.target.value }}) }} type="date" value={addBillData.dueDateRow} className="validate" />
-        <label>Add tax %</label>
+        <label>Payment due date:</label>
       </div>
-
-        <a onClick={() => { context.rootcb('addBillRow', props.billId); }} className="btn blue white-text waves-effect waves-light right"><i className="material-icons">add</i></a>
-
     </div>);
 }
 
@@ -52,11 +61,11 @@ const Bill = (props) => {
           <Grid key={key} container alignItems="center">
 
            <Grid item xs>
-              <a className="red-text left ultra-small"><i className="material-icons">close</i></a>
+              <CloseBtn dp="removeBillRow" keyid={key} />
             {context.state.billingData[billTemplateId][key].lbl_text}
            </Grid>
            <Grid item>
-            {context.state.billingData[billTemplateId][key].lbl_amount / 100}
+            {formatNum(context.state.billingData[billTemplateId][key].lbl_amount / 100)}
            </Grid>
          </Grid>
       );

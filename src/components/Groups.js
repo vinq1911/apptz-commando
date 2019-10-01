@@ -16,7 +16,7 @@ function Groups(props) {
   let retval1, retval2;
   let groupdataPresentMessage = "Group data not loaded.";
   const searchMatch = (needle, haystack) => {
-    
+
     return Object.keys(haystack).some(function(key) {
       if (typeof haystack[key] === 'object' || typeof haystack[key] === 'array') {
         return searchMatch(needle, haystack[key]);
@@ -43,7 +43,7 @@ function Groups(props) {
   retval2 = (
     <div>
 
-      <ButtonCard btnClass="indigo lighten-5" btnIcon="replay" btnCb={() => { context.rootcb('refreshData'); }}>{groupdataPresentMessage}<br />Press reload to check in group data.</ButtonCard>
+      
     </div>
   );
 

@@ -149,7 +149,7 @@ class App extends React.Component {
     },
     searchTerm: '',
     selectedElements: {},
-    adduserform: {useremail: '', userpassword: '', userphone: '', username: ''},
+    adduserform: {useremail: '', userpassword: '', userphone: '', username: '', userbillingemail: '', useridnumber: '', userbd: '', useraddress: '', userzip: '', usercity: '', usercountry: '', usernotes: ''},
     addBillingData: {},
     addgroupform: {groupemail: '', groupphone: '', groupname: ''},
     addbillform: {billidentifier: ''},
@@ -242,16 +242,16 @@ class App extends React.Component {
         };
         break;
       case 'refreshData':
-        cb = () => { Axios.get('/getData').then((res) => {
+        cb = () => { Axios.post('/getData', {}).then((res) => {
           var tmpUd = [];
           var tmpGd = [];
           var tmpId = [];
           res.data.userData.forEach((userd) => { tmpUd[userd['id']] = userd });
           res.data.groupData.forEach((groupd) => { tmpGd[groupd['id']] = groupd });
           res.data.itemData.forEach((itemd) => { tmpId[itemd['id']] = itemd });
-        
+
           this.setState({ userData: tmpUd, groupData: tmpGd, itemData: res.data.tmpId, adminData: res.data.adminData, billData: res.data.billData, billTemplateData: res.data.billTemplateData });
-          // console.log(res);
+          console.log(res);
           // console.log("updated data");
         }); };
         break;
@@ -298,6 +298,16 @@ class App extends React.Component {
             console.log(res);
             this.setState({ snackBarMessage: "Bill template created." });
             this.rootCallback('refreshBillingData');
+          });
+        }
+
+      break;
+      case 'removeBillRow':
+        cb = (props) => {
+          Axios.post('/removeBillRow', {id: props}).then(res => {
+            if (res.data.status == "success") {
+              this.rootCallback('refreshBillingData');
+            }
           });
         }
 

@@ -7,12 +7,16 @@ const ApptzConfig = {
     userName: true,
     userEmail: true,
     userPhone: true,
-    password: true,
-  },
-  customUserFields: [
-    {fieldName: 'Birthday', fieldId: 'userBday', fieldType: 'string', fieldIcon: 'cake'},
-    {fieldName: 'Note', fieldId: 'userNote', fieldType: 'string', fieldIcon: 'notes'},
-  ],
+    userbillingemail: true,
+    useridnumber: true,
+    userbd: true,
+    useraddress: true,
+    userzip: true,
+    usercity: true,
+    usercountry: true,
+    password: true
+
+  }
 }
 
 export default ApptzConfig;

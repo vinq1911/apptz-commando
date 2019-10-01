@@ -12,6 +12,7 @@ import Bill from './Bill';
 
 const BillTemplateList = () => {
   const context = useContext(StateContext);
+  if (typeof context.state.billTemplateData !== "object") return (<div></div>);
   return Object.keys(context.state.billTemplateData).map(key => {
     return (<Bill key={key} billId={key} />);
   });
@@ -26,9 +27,7 @@ const BillingTools = () => {
     <Maso>
       <BillTemplateList />
       <AddBillTemplate />
-      <CardPanel>
-        <DayPicker onDayClick={(e) => { var ab = context.state.addBillingData; ab.dueDateRow = e.toLocaleDateString(); context.dispatch({addBillingData: ab}); }} />
-      </CardPanel>
+      
     </Maso>
   );
 }

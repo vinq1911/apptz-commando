@@ -123,7 +123,7 @@ const DashMenuList = (props) => {
             </a>
           </li>
           <li>
-            <a className="dropdown-menu" href="#" onClick={(e) => { context.dispatch({selectedElements: {}}); context.rootcb('refreshBillingData');  }}>
+            <a className="dropdown-menu" href="#" onClick={(e) => { context.rootcb('refreshBillingData');  }}>
               <i className="material-icons">replay</i>
               <span>Reload</span>
             </a>
