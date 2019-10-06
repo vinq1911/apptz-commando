@@ -60,6 +60,7 @@ const setToken = (res) => {
     apptzState.authUid = res.data.uid;
     apptzState.apiUid = res.data.puid;
     apptzState.isLoggedIn = true;
+
   } else {
     apptzState.isLoggedIn = false;
   }
@@ -150,7 +151,7 @@ class App extends React.Component {
     searchTerm: '',
     selectedElements: {},
     adduserform: {useremail: '', userpassword: '', userphone: '', username: '', userbillingemail: '', useridnumber: '', userbd: '', useraddress: '', userzip: '', usercity: '', usercountry: '', usernotes: ''},
-    addBillingData: {},
+    addBillingData: {productRow: '', taxRow: '', priceRow: '', dueDateRow: (new Date())},
     addgroupform: {groupemail: '', groupphone: '', groupname: ''},
     addbillform: {billidentifier: ''},
     groupData: {},
@@ -158,6 +159,7 @@ class App extends React.Component {
     adminData: {},
     billTemplateData: {},
     billData: {},
+    billingData: {},
     fileList: [],
     addUserCard: false,
     userData: {},
@@ -222,6 +224,17 @@ class App extends React.Component {
           });
         };
       break;
+      case 'assignBill':
+        cb = (props) => {
+          const sendTo = this.state.selectedElements;
+          const billData = this.state.billingData[props];
+          console.log(this.state.addBillingData);
+          const billDue = this.state.addBillingData[props].dueDateRow;
+          Axios.post('/assignBill', {sendto: sendTo, billtemplate: props, duedate: billDue}).then(res => {
+            this.rootCallback('refreshBillingData');
+          });
+        };
+      break;
       case 'addUser':
         cb = () => {
           Axios.post('/createUser', {...this.state.adduserform}).then(res => {
@@ -241,6 +254,11 @@ class App extends React.Component {
           // console.log("adfinhg user")
         };
         break;
+      case 'initialSync':
+        this.profileRequest();
+        this.rootCallback('refreshData');
+        this.rootCallback('refreshBillingData');
+        break;
       case 'refreshData':
         cb = () => { Axios.post('/getData', {}).then((res) => {
           var tmpUd = [];
@@ -250,7 +268,7 @@ class App extends React.Component {
           res.data.groupData.forEach((groupd) => { tmpGd[groupd['id']] = groupd });
           res.data.itemData.forEach((itemd) => { tmpId[itemd['id']] = itemd });
 
-          this.setState({ userData: tmpUd, groupData: tmpGd, itemData: res.data.tmpId, adminData: res.data.adminData, billData: res.data.billData, billTemplateData: res.data.billTemplateData });
+          this.setState({ userData: tmpUd, groupData: tmpGd, itemData: res.data.tmpId, adminData: res.data.adminData});
           console.log(res);
           // console.log("updated data");
         }); };
@@ -267,6 +285,7 @@ class App extends React.Component {
           Axios.get('/getBillingData').then((res) => {
             console.log(res);
             this.setState({ snackBarMessage: "Billing data loading complete." });
+
             var _billingdata = {};
             var _billtemplates = {};
             Object.keys(res.data.billtemplates).map(key => { _billingdata[res.data.billtemplates[key].lb_id] = {}; _billtemplates[res.data.billtemplates[key].lb_id] = res.data.billtemplates[key]});
@@ -302,10 +321,32 @@ class App extends React.Component {
         }
 
       break;
+      case 'markPaid':
+        cb = (props) => {
+          Axios.post('/markBillPaid', {id: props}).then(res => {
+            console.log(res);
+          });
+        }
+      break;
+      case 'sendBill':
+        cb = (props) => {
+          Axios.post('/sendBill', {id: props}).then(res => {
+            console.log(res);
+          });
+        }
+      break;
+      case 'getPdfBill':
+        cb = (props) => {
+          Axios.post('/getPdfBill', {id: props}).then(res => {
+            console.log(res);
+          });
+        }
+      break;
       case 'removeBillRow':
         cb = (props) => {
           Axios.post('/removeBillRow', {id: props}).then(res => {
             if (res.data.status == "success") {
+              console.log(res);
               this.rootCallback('refreshBillingData');
             }
           });
@@ -414,7 +455,7 @@ class App extends React.Component {
         axios.defaults.headers.common['X-Apptz-Client'] = this.state.base;
         axios.defaults.headers.post['Content-Type'] = 'application/json';
         Axios = axios.create();
-        this.profileRequest();
+        this.rootCallback('initialSync');
       });
     }
     // console.log(this.state);

@@ -8,6 +8,7 @@ import StateContext from '../StateMachine';
 import AddUserCard from './AddUserCard';
 import AddGroupCard from './AddGroupCard';
 import BillingTools from './BillingTools';
+import Bills from './Bills';
 
 function Cards() {
   return (<div>Cards</div>);
@@ -17,7 +18,7 @@ function GroupList() {
 }
 
 function BillingList() {
-  return (<div>Billing list</div>);
+  return (<Bills />);
 }
 function CardList() {
   return (<div>Card list</div>);
